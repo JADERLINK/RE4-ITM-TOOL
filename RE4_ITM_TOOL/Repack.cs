@@ -15,13 +15,24 @@ namespace RE4_ITM_TOOL
             StreamReader idx = null;
             BinaryWriter itm = null;
             FileInfo fileInfo = new FileInfo(file);
-            string baseName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
-            string baseDiretory = fileInfo.DirectoryName;
+
+            string baseDirectory = Path.GetDirectoryName(fileInfo.FullName);
+            string baseFileName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+
+            string baseFilePath = Path.Combine(baseDirectory, baseFileName);
+
+            string pattern = "^(00)([0-9]{2})$";
+            System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+            if (regex.IsMatch(baseFileName))
+            {
+                baseFilePath = Path.Combine(baseDirectory, baseFileName + "_ITM");
+            }
 
             try
             {
                 idx = new FileInfo(file).OpenText();
-                itm = new BinaryWriter(new FileInfo(baseDiretory + "\\" + baseName + ".ITM").Create(), Encoding.GetEncoding(1252));
+                itm = new BinaryWriter(new FileInfo(Path.Combine(baseDirectory, baseFileName + ".ITM")).Create(), Encoding.GetEncoding(1252));
             }
             catch (Exception ex)
             {
@@ -124,7 +135,7 @@ namespace RE4_ITM_TOOL
 
                 for (int i = 0; i < Amount; i++)
                 {
-                    string binFilePath = Path.Combine(baseDiretory, baseName, Content[i].Value + ".BIN");
+                    string binFilePath = Path.Combine(baseFilePath, Content[i].Value + ".BIN");
 
                     itm.BaseStream.Position = offsetToNextBin;
                     FileInfo binInfo = new FileInfo(binFilePath);
@@ -175,7 +186,7 @@ namespace RE4_ITM_TOOL
 
                 for (int i = 0; i < Amount; i++)
                 {
-                    string TPLFilePath = Path.Combine(baseDiretory, baseName, Content[i].Value + ".TPL");
+                    string TPLFilePath = Path.Combine(baseFilePath, Content[i].Value + ".TPL");
 
                     itm.BaseStream.Position = offsetToNextTPL;
                     FileInfo TPLInfo = new FileInfo(TPLFilePath);

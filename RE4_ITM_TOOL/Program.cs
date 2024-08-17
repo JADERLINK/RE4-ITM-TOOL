@@ -13,7 +13,8 @@ namespace RE4_ITM_TOOL
         {
             Console.WriteLine("# RE4 ITM TOOL");
             Console.WriteLine("# By JADERLINK");
-            Console.WriteLine("# VERSION 1.0.0 (2024-05-25)");
+            Console.WriteLine("# youtube.com/@JADERLINK");
+            Console.WriteLine("# VERSION 1.0.2 (2024-08-17)");
 
             if (args.Length == 0)
             {
@@ -24,58 +25,49 @@ namespace RE4_ITM_TOOL
             }
             else if (args.Length >= 1 && File.Exists(args[0]))
             {
-                string file = args[0];
-                FileInfo info = null;
+                FileInfo fileInfo = null;
 
                 try
                 {
-                    info = new FileInfo(file);
+                    fileInfo = new FileInfo(args[0]);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error in the path: " + Environment.NewLine + ex);
                 }
-                if (info != null)
+                if (fileInfo != null)
                 {
-                    Console.WriteLine("File: " + info.Name);
-                    if (info.Exists)
+                    Console.WriteLine("File: " + fileInfo.Name);
+
+                    if (fileInfo.Extension.ToUpperInvariant() == ".ITM")
                     {
-                        if (info.Extension.ToUpperInvariant() == ".ITM")
+                        try
                         {
-                            try
-                            {
-                                Console.WriteLine("Extract Mode:");
-                                Extract.ExtractFile(file);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Error: " + Environment.NewLine + ex);
-                            }
-
+                            Console.WriteLine("Extract Mode:");
+                            Extract.ExtractFile(fileInfo.FullName);
                         }
-                        else if (info.Extension.ToUpperInvariant() == ".IDXITM")
+                        catch (Exception ex)
                         {
-                            try
-                            {
-                                Console.WriteLine("Repack Mode:");
-                                Repack.RepackFile(file);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Error: " + Environment.NewLine + ex);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("The extension is not valid: " + info.Extension);
+                            Console.WriteLine("Error: " + Environment.NewLine + ex);
                         }
 
+                    }
+                    else if (fileInfo.Extension.ToUpperInvariant() == ".IDXITM")
+                    {
+                        try
+                        {
+                            Console.WriteLine("Repack Mode:");
+                            Repack.RepackFile(fileInfo.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error: " + Environment.NewLine + ex);
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("File specified does not exist.");
+                        Console.WriteLine("The extension is not valid: " + fileInfo.Extension);
                     }
-
                 }
 
             }

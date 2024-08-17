@@ -12,8 +12,19 @@ namespace RE4_ITM_TOOL
         public static void ExtractFile(string file)
         {
             FileInfo fileInfo = new FileInfo(file);
-            string baseName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
-            string baseDiretory = fileInfo.DirectoryName;
+
+            string baseDirectory = Path.GetDirectoryName(fileInfo.FullName);
+            string baseFileName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+
+            string baseFilePath = Path.Combine(baseDirectory, baseFileName);
+
+            string pattern = "^(00)([0-9]{2})$";
+            System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+            if (regex.IsMatch(baseFileName))
+            {
+                baseFilePath = Path.Combine(baseDirectory, baseFileName + "_ITM");
+            }
 
             var br = new BinaryReader(fileInfo.OpenRead());
             uint Magic = br.ReadUInt32();
@@ -25,7 +36,7 @@ namespace RE4_ITM_TOOL
                 return;
             }
 
-            var idxitm = new FileInfo(baseDiretory + "\\" + baseName + ".idxitm").CreateText();
+            var idxitm = new FileInfo(Path.Combine(baseDirectory, baseFileName + ".idxitm")).CreateText();
             idxitm.WriteLine("# github.com/JADERLINK/RE4-ITM-TOOL");
             idxitm.WriteLine("# youtube.com/@JADERLINK");
             idxitm.WriteLine("# RE4 ITM TOOL By JADERLINK");
@@ -159,11 +170,11 @@ namespace RE4_ITM_TOOL
                 //extrai os arquivos
                 try
                 {
-                    Directory.CreateDirectory(Path.Combine(baseDiretory, baseName));
+                    Directory.CreateDirectory(baseFilePath);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error creating directory: " + baseName);
+                    Console.WriteLine("Error creating directory: " + baseFilePath);
                     Console.WriteLine(ex);
                 }
 
@@ -176,7 +187,7 @@ namespace RE4_ITM_TOOL
 
                         try
                         {
-                            File.WriteAllBytes(Path.Combine(baseDiretory, baseName, "itm" + ItmIDs[i].ToString("x3") + ".BIN"), arqBIN);
+                            File.WriteAllBytes(Path.Combine(baseFilePath, "itm" + ItmIDs[i].ToString("x3") + ".BIN"), arqBIN);
                         }
                         catch (Exception ex)
                         {
@@ -192,7 +203,7 @@ namespace RE4_ITM_TOOL
 
                         try
                         {
-                            File.WriteAllBytes(Path.Combine(baseDiretory, baseName, "itm" + ItmIDs[i].ToString("x3") + ".TPL"), arqTPL);
+                            File.WriteAllBytes(Path.Combine(baseFilePath, "itm" + ItmIDs[i].ToString("x3") + ".TPL"), arqTPL);
                         }
                         catch (Exception ex)
                         {
