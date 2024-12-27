@@ -5,15 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Globalization;
+using SimpleEndianBinaryIO;
 
 namespace RE4_ITM_TOOL
 {
     internal static class Repack
     {
-        public static void RepackFile(string file)
+        public static void RepackFile(string file, Endianness endianness)
         {
             StreamReader idx = null;
-            BinaryWriter itm = null;
+            EndianBinaryWriter itm = null;
             FileInfo fileInfo = new FileInfo(file);
 
             string baseDirectory = Path.GetDirectoryName(fileInfo.FullName);
@@ -32,7 +33,7 @@ namespace RE4_ITM_TOOL
             try
             {
                 idx = new FileInfo(file).OpenText();
-                itm = new BinaryWriter(new FileInfo(Path.Combine(baseDirectory, baseFileName + ".ITM")).Create(), Encoding.GetEncoding(1252));
+                itm = new EndianBinaryWriter(new FileInfo(Path.Combine(baseDirectory, baseFileName + ".ITM")).Create(), Encoding.GetEncoding(1252), endianness);
             }
             catch (Exception ex)
             {
@@ -95,8 +96,9 @@ namespace RE4_ITM_TOOL
 
                 for (int i = 0; i < Amount; i++)
                 {
-                    itm.Write((uint)Content[i].Key);
-                    itm.Write((uint)0x00);
+                    itm.Write((ushort)Content[i].Key);
+                    itm.Write((ushort)0x00); // padding
+                    itm.Write((uint)0x00); // padding
 
                     Console.WriteLine("The ID 0x"+ Content[i].Key .ToString("x2") + " was defined in the file!");
                 }
@@ -163,7 +165,7 @@ namespace RE4_ITM_TOOL
 
                     //seta offset
                     itm.BaseStream.Position = offsetToSetOffset;
-                    itm.Write((uint)offsetLastBin - BIN_OFFSET);
+                    itm.Write((uint)(offsetLastBin - BIN_OFFSET));
 
                     offsetToSetOffset += 0x4;
 
@@ -214,7 +216,7 @@ namespace RE4_ITM_TOOL
 
                     //seta offset
                     itm.BaseStream.Position = offsetToSetOffset;
-                    itm.Write((uint)offsetLastTPL - TPL_OFFSET);
+                    itm.Write((uint)(offsetLastTPL - TPL_OFFSET));
 
                     offsetToSetOffset += 0x4;
                 }

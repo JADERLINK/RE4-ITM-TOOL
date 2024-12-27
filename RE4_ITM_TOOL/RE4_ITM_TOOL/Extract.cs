@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using SimpleEndianBinaryIO;
 
 namespace RE4_ITM_TOOL
 {
     internal static class Extract
     {
-        public static void ExtractFile(string file)
+        public static void ExtractFile(string file, Endianness endianness)
         {
             FileInfo fileInfo = new FileInfo(file);
 
@@ -26,7 +27,7 @@ namespace RE4_ITM_TOOL
                 baseFilePath = Path.Combine(baseDirectory, baseFileName + "_ITM");
             }
 
-            var br = new BinaryReader(fileInfo.OpenRead());
+            var br = new EndianBinaryReader(fileInfo.OpenRead(), endianness);
             uint Magic = br.ReadUInt32();
 
             if (Magic != 0x00000003)
@@ -46,17 +47,17 @@ namespace RE4_ITM_TOOL
             uint models_offset = br.ReadUInt32();
             uint tpls_offset = br.ReadUInt32();
 
-            uint Amount = 0;
 
             br.BaseStream.Position = item_numbers_offset;
-            Amount = br.ReadUInt32();
+            uint Amount = br.ReadUInt32();
 
             uint[] ItmIDs = new uint[Amount];
 
             for (int i = 0; i < Amount; i++)
             {
-                uint ID = br.ReadUInt32();
-                uint Unk = br.ReadUInt32();
+                uint ID = br.ReadUInt16();
+                br.ReadUInt16(); // padding
+                br.ReadUInt32(); // padding
                 ItmIDs[i] = ID;
             }
            
@@ -183,7 +184,7 @@ namespace RE4_ITM_TOOL
                     if (Arr[i].BinLength > 0)
                     {
                         br.BaseStream.Position = Arr[i].BinOffset;
-                        byte[] arqBIN = br.ReadBytes((int)Arr[i].BinLength);
+                        byte[] arqBIN = br.ReadBytes(Arr[i].BinLength);
 
                         try
                         {
@@ -199,7 +200,7 @@ namespace RE4_ITM_TOOL
                     if (Arr[i].TplLength > 0)
                     {
                         br.BaseStream.Position = Arr[i].TplOffset;
-                        byte[] arqTPL = br.ReadBytes((int)Arr[i].TplLength);
+                        byte[] arqTPL = br.ReadBytes(Arr[i].TplLength);
 
                         try
                         {
