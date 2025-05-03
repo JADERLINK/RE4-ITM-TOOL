@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace RE4_ITM_TOOL_LITTLE_ENDIAN
 {
@@ -18,7 +17,7 @@ namespace RE4_ITM_TOOL_LITTLE_ENDIAN
             Console.WriteLine("# By JADERLINK");
             Console.WriteLine("# youtube.com/@JADERLINK");
             Console.WriteLine("# github.com/JADERLINK");
-            Console.WriteLine("# VERSION 1.1.0 (2024-12-27)");
+            Console.WriteLine("# VERSION 1.1.1 (2025-05-03)");
 
             RE4_ITM_TOOL.MainAction.Continue(args, SimpleEndianBinaryIO.Endianness.LittleEndian);
         }

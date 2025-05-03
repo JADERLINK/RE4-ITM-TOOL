@@ -17,7 +17,7 @@ namespace RE4_ITM_TOOL_BIG_ENDIAN
             Console.WriteLine("# By JADERLINK");
             Console.WriteLine("# youtube.com/@JADERLINK");
             Console.WriteLine("# github.com/JADERLINK");
-            Console.WriteLine("# VERSION 1.1.0 (2024-12-27)");
+            Console.WriteLine("# VERSION 1.1.1 (2025-05-03)");
 
             RE4_ITM_TOOL.MainAction.Continue(args, SimpleEndianBinaryIO.Endianness.BigEndian);
         }

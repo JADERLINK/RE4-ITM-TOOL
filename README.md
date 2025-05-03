@@ -1,13 +1,19 @@
 # RE4-ITM-TOOL
-Extract and repack RE4 ITM files (RE4 2007/PS2/UHD/PS4/NS/GC/WII/XBOX360)
+Extract and repack RE4 ITM files (RE4 2007/PS2/UHD/PS4/NS/GC/WII/X360/PS3)
 
 **Translate from Portuguese Brazil**
 
 Programa destinado a extrair e reempacotar arquivos .ITM
 <br> Ao extrair será gerado um arquivo de extenção .idxitm, ele será usado para o repack.
 
+
+**Update V.1.1.1**
+<br> Corrigido erro de alinhamento na tool "Big Endian" na qual fazia as texturas(TPL) apresentarem erros nas versões GC/WII.
+<br> Agora, ao arrastar arquivos sobre o programa, ele vai ficar aberto após extrair/reempacotar.
+Os arquivos bat funcionam iguais a antes, mas agora adicionei mais um parâmetro neles.
+
 **Update V.1.1.0**
-<br>Adicionado suporte para as versões GC/WII/XBOX360;
+<br>Adicionado suporte para as versões GC/WII/X360/PS3;
 
 **Update V.1.0.2**
 <br>Nessa nova versão, para arquivos "0000.ITM", irá gerar uma pasta de nome "0000_ITM", mudança feita para evitar sobreposição de arquivos.
@@ -39,8 +45,8 @@ Exemplo:
 
 ## BIG_ENDIAN vs LITTLE_ENDIAN
 
-! Para as versões "GC/WII/XBOX360" use a tool de nome BIG_ENDIAN;
+! Para as versões "GC/WII/X360/PS3" use a tool de nome BIG_ENDIAN;
 <br>! Para as versões "2007/PS2/UHD/PS4/NS" use a tool de nome LITTLE_ENDIAN;
 
 **At.te: JADERLINK**
-<br>2024-12-27
+<br>2025-05-03

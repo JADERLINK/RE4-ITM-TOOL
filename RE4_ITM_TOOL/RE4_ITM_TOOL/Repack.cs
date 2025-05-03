@@ -42,6 +42,8 @@ namespace RE4_ITM_TOOL
 
             if (idx != null)
             {
+                long alignment = endianness == Endianness.BigEndian ? 32 : 16;
+
                 Dictionary<uint, string> BaseFileDic = new Dictionary<uint, string>();
                 string endLine = "";
                 while (endLine != null)
@@ -104,15 +106,9 @@ namespace RE4_ITM_TOOL
                 }
 
                 // calculo offset tabela de bin
-                int Id_table_lenght = 0;
-                {
-                    int div = (0x4 + (Content.Length * 8)) / 32;
-                    int rest = (0x4 + (Content.Length * 8)) % 32;
-                    div += rest > 0 ? 1 : 0;
-                    Id_table_lenght = div * 32;
-                }
+                int Id_table_length = ((0x4 + (Content.Length * 8) + 31) / 32) * 32;
 
-                uint BIN_OFFSET = 0x20 + (uint)Id_table_lenght;
+                uint BIN_OFFSET = 0x20 + (uint)Id_table_length;
 
                 itm.BaseStream.Position = 0x08;
                 itm.Write((uint)BIN_OFFSET);
@@ -121,13 +117,7 @@ namespace RE4_ITM_TOOL
                 itm.BaseStream.Position = BIN_OFFSET;
                 itm.Write((uint)Amount); //quantidade
 
-                int BinTpl_table_lenght = 0;
-                {
-                    int div = (0x4 + (Content.Length * 4)) / 32;
-                    int rest = (0x4 + (Content.Length * 4)) % 32;
-                    div += rest > 0 ? 1 : 0;
-                    BinTpl_table_lenght = div * 32;
-                }
+                int BinTpl_table_lenght = ((0x4 + (Content.Length * 4) + 31) / 32) * 32;
 
                 uint offsetToNextBin = (uint)BinTpl_table_lenght + BIN_OFFSET;
                 uint offsetToSetOffset = (uint)BIN_OFFSET + 0x4;
@@ -147,11 +137,7 @@ namespace RE4_ITM_TOOL
                         fileStream.CopyTo(itm.BaseStream);
                         fileStream.Close();
 
-                        long currentPosition = itm.BaseStream.Position;
-                        long cDiv = currentPosition / 16;
-                        long cRest = currentPosition % 16;
-                        cDiv += cRest > 0 ? 1 : 0;
-                        currentPosition = cDiv * 16;
+                        long currentPosition = ((itm.BaseStream.Position + 15) / 16) * 16;
                         offsetLastBin = offsetToNextBin;
                         offsetToNextBin = (uint)currentPosition;
                         lastFile = binFilePath;
@@ -172,7 +158,7 @@ namespace RE4_ITM_TOOL
                 }
 
                 //tpl
-                uint TPL_OFFSET = offsetToNextBin;
+                uint TPL_OFFSET = (uint)(((offsetToNextBin + alignment - 1) / alignment) * alignment);
 
                 itm.BaseStream.Position = 0x0C;
                 itm.Write((uint)TPL_OFFSET);
@@ -198,11 +184,7 @@ namespace RE4_ITM_TOOL
                         fileStream.CopyTo(itm.BaseStream);
                         fileStream.Close();
 
-                        long currentPosition = itm.BaseStream.Position;
-                        long cDiv = currentPosition / 16;
-                        long cRest = currentPosition % 16;
-                        cDiv += cRest > 0 ? 1 : 0;
-                        currentPosition = cDiv * 16;
+                        long currentPosition = ((itm.BaseStream.Position + alignment - 1) / alignment) * alignment;
                         offsetLastTPL = offsetToNextTPL;
                         offsetToNextTPL = (uint)currentPosition;
                         lastFile = TPLFilePath;
@@ -223,12 +205,8 @@ namespace RE4_ITM_TOOL
 
                 //alinhamento
                 itm.BaseStream.Position = itm.BaseStream.Length;
-                long oldFullSize = itm.BaseStream.Length;
-                long oDiv = oldFullSize / 16;
-                long oRest = oldFullSize % 16;
-                oDiv += oRest > 0 ? 1 : 0;
-                long Dif = (oDiv * 16) - oldFullSize;
-                itm.Write(new byte[Dif]);
+                long dif = (16 - (itm.BaseStream.Length % 16)) % 16;
+                itm.Write(new byte[dif]);
 
                 itm.Close();
             }
